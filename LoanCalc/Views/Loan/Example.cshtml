@@ -13,8 +13,7 @@
         let a = document.getElementById('amount').value;
         let baseUrl = "https://dgloancalc.azurewebsites.net/loan/asjson";
         let qString = "?amount=" + a + "&months=" + m + "&rate=" + r;
-        let url = baseUrl + qString;
-        fetch(url)
+        fetch(baseUrl + qString)
         .then((response) => {
             return response.json();
         }).then((data) => {

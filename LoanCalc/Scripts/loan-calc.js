@@ -1,11 +1,18 @@
 ﻿$(() => {
-    //initial calculation request
-    $('#calculate').click((e) => {
+    request('#calculate', true);
+})
+
+function request(querySelector, isFirstRequest) {
+    $(querySelector).click((e) => {
         e.preventDefault();
-        var data = new P();
-        var pass = validate(data);
+        let data = new P();
+        let pass = validate(data);
         if (!pass) return;
-        $('#deadCenter').fadeOut('slow', 'swing', $('#deadCenter').remove());
+        if (isFirstRequest) {
+            $('#deadCenter').fadeOut('slow', 'swing', $('#deadCenter').remove());
+        } else {
+            $('#tableArea').empty();
+        }
         $.ajax({
             async: false,
             url: "/Loan/Calculate",
@@ -14,57 +21,39 @@
             contentType: "application/json; charset=utf-8",
             success: (data) => {
                 $('#tableArea').append(data);
-                $('#tableArea').fadeIn('slow', 'swing');
-                followupRequest();
+                if (isFirstRequest) {
+                    $('#tableArea').fadeIn('slow', 'swing');
+                }
+                request('#newCalc', false);
             }
         })
-    })
-    //bind followup requst to incoming form
-    function followupRequest() {
-        $('#newCalc').click((e) => {
-            e.preventDefault();
-            var data = new P();
-            var pass = validate(data);
-            if (!pass) return;
-            $('#tableArea').empty();
-            $.ajax({
-                async: false,
-                url: "/Loan/Calculate",
-                type: 'GET',
-                data: data,
-                contentType: "application/json; charset=utf-8",
-                success: (data) => {
-                    $('#tableArea').append(data);
-                    followupRequest();
-                }
-            })
-        });
-    }
-    //parameter construction
-    function P() {
-        this.Principal = Number($('#loanAmount').val());
-        this.TermLengthMonths = Number($('#monthCount').val());
-        this.InterestRate = Number($('#interest').val());
-    }
+    });
+}
 
-    //validation
-    function validate(params) {
-        var errs = [];
-        var alertText = "Validation Error(s):"
-        if (params.Principal <= 0 || typeof(params.Principal) != "number") {
-            errs.push(" You must have a loan amount to calculate the loan.")
-        }
-        if (params.InterestRate <= 0 || typeof (params.InterestRate) != "number") {
-            errs.push(" You must have an interest rate to calculate the loan.");
-        }
-        if (params.TermLengthMonths <= 0 || typeof (params.TermLengthMonths) != "number") {
-            errs.push(" You must have a term length to calculate the loan.")
-        }
-        if (errs.length > 0) {
-            errs.forEach((x) => { alertText += x });
-            alert(alertText);
-            return false;
-        }
-        return true;
+//parameter construction
+function P() {
+    this.Principal = Number($('#loanAmount').val());
+    this.TermLengthMonths = Number($('#monthCount').val());
+    this.InterestRate = Number($('#interest').val());
+}
+
+//validation
+function validate(params) {
+    let errs = [];
+    let alertText = "Validation Error(s):"
+    if (params.Principal <= 0 || typeof (params.Principal) != "number") {
+        errs.push(" You must have a loan amount to calculate the loan.")
     }
-})
+    if (params.InterestRate <= 0 || typeof (params.InterestRate) != "number") {
+        errs.push(" You must have an interest rate to calculate the loan.");
+    }
+    if (params.TermLengthMonths <= 0 || typeof (params.TermLengthMonths) != "number") {
+        errs.push(" You must have a term length to calculate the loan.")
+    }
+    if (errs.length > 0) {
+        errs.forEach((x) => { alertText += x });
+        alert(alertText);
+        return false;
+    }
+    return true;
+}
