@@ -125,7 +125,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\LoanCalculator.cs" />
     <Compile Include="Models\LoanParams.cs" />
     <Compile Include="Models\LoanTable.cs" />
     <Compile Include="Models\PaymentSummary.cs" />

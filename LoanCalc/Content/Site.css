@@ -131,3 +131,19 @@ table {
         width: 1rem;
         border-radius: 2rem;
     }
+
+a {
+    font-family: 'Source Code Pro', monospace !important;
+    position: fixed;
+    top: 0;
+    right: 0;
+    color: white;
+    margin-right: 3rem;
+    margin-top: 3rem;
+    transition: color .5s;
+    text-transform: uppercase;
+}
+a:hover {
+    color: #0019f7;
+    text-decoration: none;
+}

@@ -34,15 +34,11 @@
                 data: data,
                 contentType: "application/json; charset=utf-8",
                 success: (data) => {
-                    replaceTable(data);
+                    $('#tableArea').append(data);
                     followupRequest();
                 }
             })
         });
-    }
-    //replace an existing table with the updated version
-    function replaceTable(html) {
-        $('#tableArea').append(html);
     }
     //parameter construction
     function P() {

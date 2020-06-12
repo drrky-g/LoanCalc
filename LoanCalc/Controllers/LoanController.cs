@@ -10,10 +10,7 @@ namespace LoanCalc.Controllers
     public class LoanController : Controller
     {
         // GET: Loan
-        public ActionResult Index()
-        {
-            return View();
-        }
+        public ActionResult Index() { return View(); }
         public ActionResult Calculate(LoanParams loan) {
             LoanTable table = new LoanTable(loan);
 
