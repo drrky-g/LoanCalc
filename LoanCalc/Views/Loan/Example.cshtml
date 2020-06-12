@@ -1,42 +1,27 @@
-﻿
-@{
-    Layout = null;
-}
-
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Example</title>
-    <script src="~/Scripts/jquery-3.4.1.js"></script>
-</head>
-<body>
-    <div>
-        <input id="rate" type="number" placeholder="Interest Rate" />
-        <input id="months" type="number" placeholder="Months" />
-        <input id="amount" type="number" placeholder="Loan Amount" />
-        <button onclick="get()">Request</button>
-        <div id="result"></div>
-    </div>
-    <script>
-        function get() {
-            let r = document.getElementById('rate').value;
-            let m = document.getElementById('months').value;
-            let a = document.getElementById('amount').value;
-            let baseUrl = "https://dgloancalc.azurewebsites.net/loan/asjson";
-            let qString = "?amount=" + a + "&months=" + m + "&rate=" + r;
-            let url = baseUrl + qString;
-            fetch(url)
-            .then((response) => {
-                return response.json();
-            })
-            .then((data) => {
-                console.log(data);
-                let asString = JSON.stringify(data);
-                document.getElementById('result').append(asString);
-                //your code here.....
-            })
-        }
-    </script>
-</body>
-</html>
+﻿<div>
+    <input id="rate" type="number" placeholder="Interest Rate" />
+    <input id="months" type="number" placeholder="Months" />
+    <input id="amount" type="number" placeholder="Loan Amount" />
+    <button onclick="get()">Request</button>
+    <div id="result"></div>
+</div>
+<script>
+    function get() {
+        document.getElementById('result').innerHTML = '';
+        let r = document.getElementById('rate').value;
+        let m = document.getElementById('months').value;
+        let a = document.getElementById('amount').value;
+        let baseUrl = "https://dgloancalc.azurewebsites.net/loan/asjson";
+        let qString = "?amount=" + a + "&months=" + m + "&rate=" + r;
+        let url = baseUrl + qString;
+        fetch(url)
+        .then((response) => {
+            return response.json();
+        }).then((data) => {
+            //your code here.....
+            console.log(data);
+            let asString = JSON.stringify(data);
+            document.getElementById('result').append(asString);
+        })
+    }
+</script>
