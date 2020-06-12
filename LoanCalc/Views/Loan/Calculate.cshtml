@@ -1,0 +1,44 @@
+﻿@using LoanCalc.Models
+@model LoanTable
+    <div class="container">
+        <div class="row" style="margin: 5rem 0;">
+            <div class="form-inline">
+                <div class="form-group">
+                    <label for="monthCount">Months:</label>
+                    @Html.TextBoxFor(m => m.Params.TermLengthMonths, htmlAttributes: new { type = "number", id = "monthCount", @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label for="loanAmount">Amount ($):</label>
+                    @Html.TextBoxFor(m => m.Params.Principal, htmlAttributes: new { type = "number", id = "loanAmount", @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail2">Interest Rate (%):</label>
+                    @Html.TextBoxFor(m => m.Params.InterestRate, htmlAttributes: new { type = "number", id = "interest", @class = "form-control" })
+                </div>
+                <button class="btn btn-lg myButton" id="newCalc">Calculate</button>
+            </div>
+        </div>
+        <div class="row table-responsive">
+            <table class="table" style="width:100%">
+                <tr>
+                    <th>Month</th>
+                    <th>Monthly Payment</th>
+                    <th>Principle Amount</th>
+                    <th>Interest Amount</th>
+                    <th>Total Interest Paid</th>
+                    <th>Remaining Balance</th>
+                </tr>
+                @foreach (PaymentSummary summary in Model.TableData) {
+                    <tr>
+                        <td>@summary.Month.ToString()</td>
+                        <td>@summary.PaymentAmount.ToString("C")</td>
+                        <td>@summary.PrinciplePaymentAmount.ToString("C")</td>
+                        <td>@summary.InterestPaymentAmount.ToString("C")</td>
+                        <td>@summary.TotalInterestPaid.ToString("C")</td>
+                        <td>@summary.RemainingBalance.ToString("C")</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+
