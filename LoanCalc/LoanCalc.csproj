@@ -131,6 +131,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\prism.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -139,6 +140,7 @@
     <None Include="Properties\PublishProfiles\DgLoanCalc - Web Deploy.pubxml" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\loan-calc.js" />
+    <Content Include="Scripts\prism.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -150,9 +152,10 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Loan\Index.cshtml" />
-    <Content Include="Views\Loan\Calculate.cshtml" />
+    <Content Include="Views\Loan\App.cshtml" />
+    <Content Include="Views\Loan\Table.cshtml" />
     <Content Include="Views\Loan\Example.cshtml" />
+    <Content Include="Views\Loan\Code.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

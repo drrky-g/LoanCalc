@@ -13,7 +13,7 @@ namespace LoanCalc {
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Loan", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Loan", action = "App", id = UrlParameter.Optional }
             );
         }
     }

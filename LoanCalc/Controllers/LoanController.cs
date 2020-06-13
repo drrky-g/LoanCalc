@@ -1,14 +1,15 @@
-﻿using LoanCalc.Models;
-using System.Web.Mvc;
-
-namespace LoanCalc.Controllers {
+﻿namespace LoanCalc.Controllers {
+    using LoanCalc.Models;
+    using System.Web.Mvc;
     public class LoanController : Controller {
         // Main App
-        public ActionResult Index() { return View(); }
+        public ActionResult App() { return View(); }
         // Api Example
         public ActionResult Example() { return View(); }
+        // Code Preview
+        public ActionResult Code() { return PartialView(); }
         // Table Partial
-        public ActionResult Calculate(LoanParams loan) {
+        public ActionResult Table(LoanParams loan) {
             LoanTable table = new LoanTable(loan);
             return PartialView(table);
         }

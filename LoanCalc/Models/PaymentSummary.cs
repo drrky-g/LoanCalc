@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace LoanCalc.Models {
+﻿namespace LoanCalc.Models {
     public class PaymentSummary {
         public PaymentSummary() { }
         public int Month { get; set; }

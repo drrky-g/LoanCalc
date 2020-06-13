@@ -1,0 +1,251 @@
+﻿
+@{
+    Layout = null;
+}
+<div id="codeWrap">
+    <h2>Controller:</h2>
+    <pre>
+    <code class="language-cs">
+            public class LoanController : Controller {
+
+                // Main App
+                public ActionResult App() { return View(); }
+
+                // Api Example
+                public ActionResult Example() { return View(); }
+
+                // Code Preview
+                public ActionResult Code() { return PartialView(); }
+
+                // Table Partial
+                public ActionResult Table(LoanParams loan) {
+                    LoanTable table = new LoanTable(loan);
+                    return PartialView(table);
+                }
+
+                // Json Endpoint
+                public JsonResult AsJson(int amount, int months, int rate) {
+                    LoanParams loan = new LoanParams {
+                        InterestRate = rate,
+                        Principal = amount,
+                        TermLengthMonths = months
+                    };
+                    return Json(new LoanTable(loan), JsonRequestBehavior.AllowGet);
+                }
+            }
+        </code>
+    </pre>
+    <h2>Models:</h2>
+    <h4>LoanTable</h4>
+    <pre>
+    <code class="language-cs">
+            public class LoanTable {
+                public LoanTable(LoanParams loan) {
+                    Params = loan;
+                    TableData = new List<PaymentSummary>();
+
+                    double amount = Math.Round(loan.Principal, 2);
+                    double rate = loan.InterestRate / 100;
+                    double payment = Math.Round((amount * (rate / 12) * (Math.Pow(1 + rate / 12, loan.TermLengthMonths))) / (Math.Pow(1 + (rate / 12), loan.TermLengthMonths) - 1), 2);
+
+                    double startingBalance = amount;
+                    double endingBalance = amount;
+                    double totalInterestPaid = 0.00;
+
+                    for (int month = 1; month <= loan.TermLengthMonths; month++) {
+                        double interestCharge = Math.Round(rate / 12 * startingBalance, 2);
+                        totalInterestPaid += interestCharge;
+                        endingBalance = Math.Round(startingBalance + interestCharge - payment, 2);
+                        if (endingBalance < 1 &&
+                            endingBalance > 0) {
+                            endingBalance = 0.00;
+                        }
+                        TableData.Add(new PaymentSummary {
+                            Month = month,
+                            PaymentAmount = payment,
+                            PrinciplePaymentAmount = payment - interestCharge,
+                            InterestPaymentAmount = interestCharge,
+                            TotalInterestPaid = totalInterestPaid,
+                            RemainingBalance = endingBalance
+                        });
+                        startingBalance = endingBalance;
+                    }
+                }
+                public LoanParams Params { get; set; }
+                public IList<PaymentSummary> TableData { get; set; }
+            }
+        </code>
+    </pre>
+    <h4>LoanParams</h4>
+    <pre>
+    <code class="language-cs">
+            public class LoanParams {
+                public LoanParams() { }
+                public double Principal { get; set; }
+                public int TermLengthMonths { get; set; }
+                public double InterestRate { get; set; }
+            }
+        </code>
+    </pre>
+    <h4>PaymentSummary</h4>
+    <pre>
+    <code class="language-cs">
+            public class PaymentSummary {
+                public PaymentSummary() { }
+                public int Month { get; set; }
+                public double PaymentAmount { get; set; }
+                public double PrinciplePaymentAmount { get; set; }
+                public double InterestPaymentAmount { get; set; }
+                public double TotalInterestPaid { get; set; }
+                public double RemainingBalance { get; set; }
+            }
+        </code>
+    </pre>
+    <h2>Views:</h2>
+    <h4>App</h4>
+    <pre>
+        <code class="language-markup">
+            &lt;h2>Loan Calculator&lt;/h2>
+            &lt;!--initial form-->
+            &lt;div id="deadCenter">
+            &lt;form id="centerForm">
+            &lt;input class="form-control" id="monthCount" type="number" placeholder="Term in Months" />
+            &lt;input class="form-control" id="loanAmount" type="number" placeholder="Amount of Loan ($)" />
+            &lt;input class="form-control" id="interest" type="number" placeholder="Interest Rate (%)" />
+            &lt;button class="btn myButton" id="calculate">Calculate&lt;/button>
+            &lt;/form>
+            &lt;/div>
+            &lt;div hidden id="tableArea">&lt;/div>
+            &lt;a target="_blank" href="https://github.com/drrky-g/LoanCalc">Repo&lt;/a>
+
+            &lt;!-- code preview -->
+            &lt;button type="button" data-toggle="modal" data-target="#codeModal" id="codeBtn">View Code&lt;/button>
+            &lt;div class="modal fade" id="codeModal" tabindex="-1" role="dialog">
+                &lt;div class="modal-dialog modal-lg" role="document">
+                    &lt;div class="modal-content">
+                        &lt;div class="modal-header">
+                            &lt;button type="button" class="close" data-dismiss="modal" aria-label="Close">&lt;span aria-hidden="true">&times;&lt;/span>&lt;/button>
+                            &lt;h4 class="modal-title">Behind the Scenes:&lt;/h4>
+                        &lt;/div>
+                        &lt;div class="modal-body">
+                            @@{ Html.RenderAction("Code", "Loan", null); }
+                        &lt;/div>
+                        &lt;div class="modal-footer">
+                            &lt;button type="button" class="btn myButton" data-dismiss="modal">Close&lt;/button>
+                        &lt;/div>
+                    &lt;/div>
+                &lt;/div>
+            &lt;/div>
+        </code>
+    </pre>
+    <h4>Table</h4>
+    <pre>
+    <code class="language-markup">
+        &lt;div class="container">
+            &lt;div class="row" style="margin: 5rem 0;">
+                &lt;div class="form-inline">
+                    &lt;div class="form-group">
+                        &lt;label for="monthCount">Months:&lt;/label>
+                        @@Html.TextBoxFor(m => m.Params.TermLengthMonths, htmlAttributes: new { type = "number", id = "monthCount", @@class = "form-control" })
+                    &lt;/div>
+                    &lt;div class="form-group">
+                        &lt;label for="loanAmount">Amount ($):&lt;/label>
+                        @@Html.TextBoxFor(m => m.Params.Principal, htmlAttributes: new { type = "number", id = "loanAmount", @@class = "form-control" })
+                    &lt;/div>
+                    &lt;div class="form-group">
+                        &lt;label for="exampleInputEmail2">Interest Rate (%):&lt;/label>
+                        @@Html.TextBoxFor(m => m.Params.InterestRate, htmlAttributes: new { type = "number", id = "interest", @@class = "form-control" })
+                    &lt;/div>
+                    &lt;button class="btn btn-lg myButton" id="newCalc">Calculate&lt;/button>
+                &lt;/div>
+            &lt;/div>
+            &lt;div class="row table-responsive">
+                &lt;table class="table" style="width:100%">
+                    &lt;tr>
+                        &lt;th>Month&lt;/th>
+                        &lt;th>Monthly Payment&lt;/th>
+                        &lt;th>Principle Amount&lt;/th>
+                        &lt;th>Interest Amount&lt;/th>
+                        &lt;th>Total Interest Paid&lt;/th>
+                        &lt;th>Remaining Balance&lt;/th>
+                    &lt;/tr>
+                    @@foreach (PaymentSummary summary in Model.TableData) {
+                        &lt;tr>
+                            &lt;td>@@summary.Month.ToString()&lt;/td>
+                            &lt;td>@@summary.PaymentAmount.ToString("C")&lt;/td>
+                            &lt;td>@@summary.PrinciplePaymentAmount.ToString("C")&lt;/td>
+                            &lt;td>@@summary.InterestPaymentAmount.ToString("C")&lt;/td>
+                            &lt;td>@@summary.TotalInterestPaid.ToString("C")&lt;/td>
+                            &lt;td>@@summary.RemainingBalance.ToString("C")&lt;/td>
+                        &lt;/tr>
+                    }
+                &lt;/table>
+            &lt;/div>
+        &lt;/div>
+    </code>
+    </pre>
+    <h4>Script</h4>
+    <pre>
+    <code class="language-js">
+        $(() => {
+            request('#calculate', true);
+        })
+
+        function request(querySelector, isFirstRequest) {
+            $(querySelector).click((e) => {
+                e.preventDefault();
+                let data = new P();
+                let pass = validate(data);
+                if (!pass) return;
+                if (isFirstRequest) {
+                    $('#deadCenter').fadeOut('slow', 'swing', $('#deadCenter').remove());
+                } else {
+                    $('#tableArea').empty();
+                }
+                $.ajax({
+                    async: false,
+                    url: "/Loan/Table",
+                    type: 'GET',
+                    data: data,
+                    contentType: "application/json; charset=utf-8",
+                    success: (data) => {
+                        $('#tableArea').append(data);
+                        if (isFirstRequest) {
+                        $('#tableArea').fadeIn('slow', 'swing');
+                        }
+                        request('#newCalc', false);
+                    }
+                })
+            });
+        }
+
+        //parameter construction
+        function P() {
+            this.Principal = Number($('#loanAmount').val());
+            this.TermLengthMonths = Number($('#monthCount').val());
+            this.InterestRate = Number($('#interest').val());
+        }
+
+        //validation
+        function validate(params) {
+            let errs = [];
+            let alertText = "Validation Error(s):"
+            if (params.Principal <= 0 || typeof (params.Principal) != "number") {
+                errs.push(" You must have a loan amount to calculate the loan.")
+            }
+            if (params.InterestRate <= 0 || typeof (params.InterestRate) != "number") {
+                    errs.push(" You must have an interest rate to calculate the loan.");
+            }
+            if (params.TermLengthMonths <= 0 || typeof (params.TermLengthMonths) != "number") {
+            errs.push(" You must have a term length to calculate the loan.")
+            }
+            if (errs.length > 0) {
+                errs.forEach((x) => { alertText += x });
+                alert(alertText);
+                return false;
+            }
+            return true;
+        }
+    </code>
+    </pre>
+</div>

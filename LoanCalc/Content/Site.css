@@ -137,3 +137,61 @@ a:hover {
     color: #0019f7;
     text-decoration: none;
 }
+#codeBtn {
+    font-family: 'Source Code Pro', monospace !important;
+    padding: 0;
+    position: fixed;
+    background: transparent;
+    border: none;
+    top: 0;
+    right: 0;
+    color: white;
+    margin-right: 3rem;
+    margin-top: 5rem;
+    transition: color .5s;
+    text-transform: uppercase;
+}
+#codeBtn:hover {
+    color: #0019f7;
+    text-decoration: none;
+}
+.modal-content {
+    background-color: #302f2f !important;
+}
+.modal-header > h2{
+    text-align: left;
+}
+.modal-header{
+    border-bottom-color: #0019f7;
+}
+.modal-footer{
+    border-top-color: #0019f7;
+}
+pre {
+    border-radius: 2rem !important;
+    border: none;
+    z-index: 5;
+    box-shadow: 10px 25px 40px 5px rgba(0,0,0,.3);
+}
+
+pre::-webkit-scrollbar {
+    width: 0;
+}
+
+#codeWrap > h2, h4 {
+    color: white;
+    font-weight: bold;
+    margin: 1.5rem;
+    text-align: left;
+}
+
+#codeWrap {
+    padding: 3rem;
+}
+
+.close {
+    color: #0019f7 !important;
+    box-shadow: none;
+    opacity: 1;
+    text-shadow: none;
+}

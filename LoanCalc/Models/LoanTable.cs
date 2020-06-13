@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace LoanCalc.Models {
+﻿namespace LoanCalc.Models {
+    using System;
+    using System.Collections.Generic;
     public class LoanTable {
         public LoanTable(LoanParams loan) {
             Params = loan;

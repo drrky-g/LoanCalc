@@ -15,7 +15,7 @@ function request(querySelector, isFirstRequest) {
         }
         $.ajax({
             async: false,
-            url: "/Loan/Calculate",
+            url: "/Loan/Table",
             type: 'GET',
             data: data,
             contentType: "application/json; charset=utf-8",
