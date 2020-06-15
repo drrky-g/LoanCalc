@@ -1,0 +1,282 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_CodeModalWrapper.cshtml";
+}
+<div id="codeWrap">
+    <h2>Controller:</h2>
+    <pre>
+        <code class="language-cs">
+            public class LoanController : Controller, ILoanController {
+                public LoanController() { loan = null; }
+                internal class ChartData {
+                    public ChartData() { }
+                    public string[] labels { get; set; }
+                    public double[] lineData { get; set; }
+                    public double[] barData { get; set; }
+                }
+                public LoanParams loan { get; set; }
+                public ViewResult App() {
+                    return View();
+                }
+                public PartialViewResult Form(bool isStart = false) {
+                    return PartialView(isStart);
+                }
+                public PartialViewResult Table(double amount, int months, double rate) {
+                    loan = new LoanParams {
+                        InterestRate = rate,
+                        Principal = amount,
+                        TermLengthMonths = months
+                    };
+                    return PartialView(new LoanTable(loan));
+                }
+                public JsonResult Chart(double amount, int months, double rate) {
+                    loan = new LoanParams {
+                    InterestRate = rate,
+                    Principal = amount,
+                    TermLengthMonths = months
+                    };
+                    LoanTable table = new LoanTable(loan);
+                    IList&lt;string> chartLabels = new List&lt;string>(loan.TermLengthMonths);
+                    DateTime time = DateTime.Now;
+                    for (int i = 0; i < loan.TermLengthMonths; i++) {
+                        chartLabels.Add(time.AddMonths(i).ToString("MMM"));
+                    }
+                    return Json(new ChartData {
+                        labels = chartLabels.ToArray(),
+                        lineData = table.TableData.Select(t => t.PrinciplePaymentAmount).ToArray(),
+                        barData = table.TableData.Select(t => t.InterestPaymentAmount).ToArray()
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+        </code>
+    </pre>
+    <h2>Models:</h2>
+    <h4>LoanTable</h4>
+    <pre>
+    <code class="language-cs">
+            public class LoanTable {
+                public LoanTable(LoanParams loan) {
+                    Params = loan;
+                    TableData = new List&lt;PaymentSummary>();
+
+                    double amount = Math.Round(loan.Principal, 2);
+                    double rate = loan.InterestRate / 100;
+                    double payment = Math.Round((amount * (rate / 12) * (Math.Pow(1 + rate / 12, loan.TermLengthMonths))) / (Math.Pow(1 + (rate / 12), loan.TermLengthMonths) - 1), 2);
+
+                    double startingBalance = amount;
+                    double endingBalance = amount;
+                    double totalInterestPaid = 0.00;
+
+                    for (int month = 1; month <= loan.TermLengthMonths; month++) {
+                        double interestCharge = Math.Round(rate / 12 * startingBalance, 2);
+                        totalInterestPaid += interestCharge;
+                        endingBalance = Math.Round(startingBalance + interestCharge - payment, 2);
+                        if (endingBalance < 1 &&
+                            endingBalance > 0) {
+                            endingBalance = 0.00;
+                        }
+                        TableData.Add(new PaymentSummary {
+                            Month = month,
+                            PaymentAmount = payment,
+                            PrinciplePaymentAmount = payment - interestCharge,
+                            InterestPaymentAmount = interestCharge,
+                            TotalInterestPaid = totalInterestPaid,
+                            RemainingBalance = endingBalance
+                        });
+                        startingBalance = endingBalance;
+                    }
+                }
+                public LoanParams Params { get; set; }
+                public IList&lt;PaymentSummary> TableData { get; set; }
+            }
+        </code>
+    </pre>
+    <h4>LoanParams</h4>
+    <pre>
+    <code class="language-cs">
+            public class LoanParams {
+                public LoanParams() { }
+                public double Principal { get; set; }
+                public int TermLengthMonths { get; set; }
+                public double InterestRate { get; set; }
+            }
+        </code>
+    </pre>
+    <h4>PaymentSummary</h4>
+    <pre>
+    <code class="language-cs">
+            public class PaymentSummary {
+                public PaymentSummary() { }
+                public int Month { get; set; }
+                public double PaymentAmount { get; set; }
+                public double PrinciplePaymentAmount { get; set; }
+                public double InterestPaymentAmount { get; set; }
+                public double TotalInterestPaid { get; set; }
+                public double RemainingBalance { get; set; }
+            }
+        </code>
+    </pre>
+    <h2>Views:</h2>
+    <h4>App</h4>
+    <pre>
+        <code class="language-markup">
+            &lt;h2>Loan Calculator&lt;/h2>
+            &lt;!-- initial form -->
+            &lt;div id="deadCenter">
+                @@{Html.RenderAction("Form", "Loan", new { isStart = true });}
+            &lt;/div>
+            &lt;!-- result -->
+            &lt;div class="container">
+                &lt;div hidden id="result">
+                    @@{Html.RenderAction("Form", "Loan", null);}
+                    &lt;ul class="nav nav-tabs" role="tablist">
+                        &lt;li role="presentation" class="active">&lt;a href="#table" aria-controls="table" role="tab" data-toggle="tab">Table&lt;/a>&lt;/li>
+                        &lt;li role="presentation">&lt;a href="#chart" aria-controls="chart" role="tab" data-toggle="tab">Chart&lt;/a>&lt;/li>
+                    &lt;/ul>
+                    &lt;div class="tab-content">
+                        &lt;div role="tabpanel" class="tab-pane active" id="table">&lt;/div>
+                        &lt;div role="tabpanel" class="tab-pane" id="chart">
+                            &lt;canvas id="loanChart" style="max-height: 1000px;">&lt;/canvas>
+                        &lt;/div>
+                    &lt;/div>
+
+                &lt;/div>
+            &lt;/div>
+            &lt;!-- code preview -->
+            @@{Html.RenderAction("Loan", "Code", null);}
+        </code>
+    </pre>
+    <h4>Table</h4>
+    <pre>
+    <code class="language-markup">
+        &lt;div class="container">
+            &lt;div class="row table-responsive">
+                &lt;table class="table" style="width:100%">
+                    &lt;thead>
+                        &lt;tr>
+                            &lt;th>Month&lt;/th>
+                            &lt;th>Monthly Payment&lt;/th>
+                            &lt;th>Principle Amount&lt;/th>
+                            &lt;th>Interest Amount&lt;/th>
+                            &lt;th>Total Interest Paid&lt;/th>
+                            &lt;th>Remaining Balance&lt;/th>
+                        &lt;/tr>
+                    &lt;/thead>
+                    &lt;tbody>
+                        @@foreach (PaymentSummary summary in Model.TableData) {
+                            &lt;tr>
+                                &lt;td>@@summary.Month.ToString()&lt;/td>
+                                &lt;td>@@summary.PaymentAmount.ToString("C")&lt;/td>
+                                &lt;td>@@summary.PrinciplePaymentAmount.ToString("C")&lt;/td>
+                                &lt;td>@@summary.InterestPaymentAmount.ToString("C")&lt;/td>
+                                &lt;td>@@summary.TotalInterestPaid.ToString("C")&lt;/td>
+                                &lt;td>@@summary.RemainingBalance.ToString("C")&lt;/td>
+                            &lt;/tr>
+                        }
+                    &lt;/tbody>
+
+                &lt;/table>
+            &lt;/div>
+        &lt;/div>
+    </code>
+    </pre>
+    <h4>Script</h4>
+    <pre>
+        <code class="language-js">
+            $(() => {
+                request('#calculate', true);
+            })
+
+            let activeChart = null;
+
+            function request(querySelector, isFirstRequest) {
+                $(querySelector).click((e) => {
+                    e.preventDefault();
+                    let data = new P();
+                    let pass = validate(data);
+                    if (!pass) return;
+                    if (isFirstRequest) {
+                        $('#deadCenter').fadeOut('slow', 'swing', $('#deadCenter').remove());
+                    } else {
+                        $('#table').empty();
+                    }
+                    $.ajax({
+                        async: false,
+                        url: "/Loan/Table?amount=" + data.Principal + "&months=" + data.TermLengthMonths + "&rate=" + data.InterestRate,
+                        type: 'GET',
+                        success: (table) => {
+                            $('#amount').val(data.Principal);
+                            $('#months').val(data.TermLengthMonths);
+                            $('#rate').val(data.InterestRate);
+                            $('#table').append(table);
+                            if (isFirstRequest) {
+                                $('#result').fadeIn('slow', 'swing');
+                            }
+                            request('#newCalc', false);
+                            getChart(data.Principal, data.TermLengthMonths, data.InterestRate);
+                        }
+                    })
+                });
+
+            function getChart(amount, months, rate) {
+                let qString = "/loan/chart?amount=" + amount + "&months=" + months + "&rate=" + rate;
+                fetch(qString)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((chartData) => {
+                    if (activeChart != null) {
+                        activeChart.destroy();
+                    }
+                    activeChart = new Chart($('#loanChart'), {
+                    type: 'bar',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Interest Payment',
+                                data: chartData.barData,
+                                order: 1
+                            },
+                            {
+                                label: 'Principle Payment',
+                                data: chartData.lineData,
+                                type: 'line',
+                                order: 2
+                            }
+                        ],
+                        labels: chartData.labels
+                        }
+                    })
+                })
+            }
+
+            function P() {
+                this.Principal = Number($('#amount').val());
+                this.TermLengthMonths = Number($('#months').val());
+                this.InterestRate = Number($('#rate').val());
+            }
+
+            function validate(params) {
+                let errs = [];
+                let alertText = "Validation Error(s):"
+                if (params.Principal <= 0 || typeof (params.Principal) != "number") {
+                    errs.push(" You must have a loan amount to calculate the loan.")
+                }
+                if (params.InterestRate <= 0 || typeof (params.InterestRate) != "number") {
+                    errs.push(" You must have an interest rate to calculate the loan.");
+                }
+                if (params.TermLengthMonths <= 0 || typeof (params.TermLengthMonths) != "number") {
+                    errs.push(" You must have a term length to calculate the loan.")
+                }
+                if (errs.length > 0) {
+                    errs.forEach((x) => { alertText += x });
+                    alert(alertText);
+                    return false;
+                }
+                return true;
+            }
+        }
+        </code>
+    </pre>
+</div>
+

@@ -1,30 +1,23 @@
 ﻿<h2>Loan Calculator</h2>
 <!-- initial form -->
 <div id="deadCenter">
-    <form id="centerForm">
-        <input class="form-control" id="monthCount" type="number" placeholder="Term in Months" />
-        <input class="form-control" id="loanAmount" type="number" placeholder="Amount of Loan ($)" />
-        <input class="form-control" id="interest" type="number" placeholder="Interest Rate (%)" />
-        <button class="btn myButton" id="calculate">Calculate</button>
-    </form>
+    @{Html.RenderAction("Form", "Loan", new { isStart = true });}
 </div>
-<div hidden id="tableArea"></div>
-<a target="_blank" href="https://github.com/drrky-g/LoanCalc">Repo</a>
-<!-- code preview -->
-<button type="button" data-toggle="modal" data-target="#codeModal" id="codeBtn">View Code</button>
-<div class="modal fade" id="codeModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Behind the Scenes:</h4>
-            </div>
-            <div class="modal-body">
-                @{ Html.RenderAction("Code", "Loan", null); }
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn myButton" data-dismiss="modal">Close</button>
+<!-- result -->
+<div class="container">
+    <div hidden id="result">
+        @{Html.RenderAction("Form", "Loan", null);}
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#table" aria-controls="table" role="tab" data-toggle="tab">Table</a></li>
+            <li role="presentation"><a href="#chart" aria-controls="chart" role="tab" data-toggle="tab">Chart</a></li>
+        </ul>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="table"></div>
+            <div role="tabpanel" class="tab-pane" id="chart">
+                <canvas id="loanChart" style="max-height: 1000px;"></canvas>
             </div>
         </div>
     </div>
 </div>
+<!-- code preview -->
+@{Html.RenderAction("Loan", "Code", null);}

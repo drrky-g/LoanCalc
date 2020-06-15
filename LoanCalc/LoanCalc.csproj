@@ -120,10 +120,13 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CodeController.cs" />
     <Compile Include="Controllers\LoanController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\ILoanController.cs" />
+    <Compile Include="Models\ChartModels\LoanChart.cs" />
     <Compile Include="Models\LoanParams.cs" />
     <Compile Include="Models\LoanTable.cs" />
     <Compile Include="Models\PaymentSummary.cs" />
@@ -155,7 +158,11 @@
     <Content Include="Views\Loan\App.cshtml" />
     <Content Include="Views\Loan\Table.cshtml" />
     <Content Include="Views\Loan\Example.cshtml" />
-    <Content Include="Views\Loan\Code.cshtml" />
+    <Content Include="Views\Shared\_CodeModalWrapper.cshtml" />
+    <Content Include="Views\Loan\Chart.cshtml" />
+    <Content Include="Views\Loan\ChartTest.cshtml" />
+    <Content Include="Views\Loan\Form.cshtml" />
+    <Content Include="Views\Code\Loan.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

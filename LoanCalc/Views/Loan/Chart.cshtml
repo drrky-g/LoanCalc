@@ -1,0 +1,28 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    body{
+        background: white !important;
+    }
+</style>
+<canvas id="chart" style=" max-height: 1000px;"></canvas>
+<script>
+    var chartArea = $('#chart');
+    var loanChart = new Chart(chartArea, {
+        type: 'bar',
+        data: {
+            datasets: [{
+                label: 'Interest Payment',
+                data: [10, 20, 30, 40]
+            }, {
+                label: 'Total Payment',
+                data: [50, 50, 50, 50],
+
+                // Changes this dataset to become a line
+                type: 'line'
+            }],
+            labels: ['January', 'February', 'March', 'April']
+        }
+    });
+</script>
