@@ -1,9 +1,7 @@
 ﻿namespace LoanCalc.Interfaces {
-    using LoanCalc.Models;
+    using LoanCalc.Models.LoanModels;
     using System.Web.Mvc;
     interface ILoanController {
-        //Parameter object used throughout controller
-        LoanParams loan { get; set; }
         //'Presenter' View
         ViewResult App();
         // Polymorphic Form Component

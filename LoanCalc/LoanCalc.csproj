@@ -126,10 +126,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\ILoanController.cs" />
-    <Compile Include="Models\ChartModels\LoanChart.cs" />
-    <Compile Include="Models\LoanParams.cs" />
-    <Compile Include="Models\LoanTable.cs" />
-    <Compile Include="Models\PaymentSummary.cs" />
+    <Compile Include="Models\LoanModels\LoanChart.cs" />
+    <Compile Include="Models\LoanModels\LoanParams.cs" />
+    <Compile Include="Models\LoanModels\LoanTable.cs" />
+    <Compile Include="Models\LoanModels\PaymentSummary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

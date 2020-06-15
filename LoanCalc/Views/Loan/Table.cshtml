@@ -1,5 +1,5 @@
-﻿@using LoanCalc.Models
-@model LoanTable
+﻿@using LoanCalc.Models.LoanModels
+@model IList<PaymentSummary>
 <div class="container">
     <div class="row table-responsive">
         <table class="table" style="width:100%">
@@ -14,7 +14,7 @@
                 </tr>
             </thead>
             <tbody>
-           @foreach (PaymentSummary summary in Model.TableData) {
+           @foreach (PaymentSummary summary in Model) {
                 <tr>
                     <td>@summary.Month.ToString()</td>
                     <td>@summary.PaymentAmount.ToString("C")</td>
@@ -25,7 +25,6 @@
                 </tr>
             }
             </tbody>
-            
         </table>
     </div>
 </div>

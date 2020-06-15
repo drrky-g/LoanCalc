@@ -1,4 +1,4 @@
-﻿namespace LoanCalc.Models {
+﻿namespace LoanCalc.Models.LoanModels {
     public class PaymentSummary {
         public PaymentSummary() { }
         public int Month { get; set; }
