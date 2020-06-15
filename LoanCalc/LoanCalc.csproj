@@ -158,7 +158,6 @@
     <Content Include="Views\Loan\App.cshtml" />
     <Content Include="Views\Loan\Table.cshtml" />
     <Content Include="Views\Shared\_CodeModalWrapper.cshtml" />
-    <Content Include="Views\Loan\Chart.cshtml" />
     <Content Include="Views\Loan\Form.cshtml" />
     <Content Include="Views\Code\Loan.cshtml" />
   </ItemGroup>
