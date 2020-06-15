@@ -31,9 +31,9 @@
                 }
                 public JsonResult Chart(double amount, int months, double rate) {
                     loan = new LoanParams {
-                    InterestRate = rate,
-                    Principal = amount,
-                    TermLengthMonths = months
+                        InterestRate = rate,
+                        Principal = amount,
+                        TermLengthMonths = months
                     };
                     LoanTable table = new LoanTable(loan);
                     IList&lt;string> chartLabels = new List&lt;string>(loan.TermLengthMonths);
