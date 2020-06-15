@@ -8,7 +8,7 @@
             Params = loanParams;
             TableData = new List<PaymentSummary>();
 
-            MonthlyPaymentRounded = 
+            MonthlyPayment = 
                 (Params.Amount * (Params.Rate / 12) * (Math.Pow(1 + Params.Rate / 12, Params.Months))) / 
                 (Math.Pow(1 + (Params.Rate / 12), Params.Months) - 1);
 
@@ -19,15 +19,15 @@
             for (int month = 1; month <= Params.Months; month++) {
                 double interestCharge = Params.Rate / 12 * startingBalance;
                 totalInterestPaid += interestCharge;
-                endingBalance = startingBalance + interestCharge - MonthlyPaymentRounded;
+                endingBalance = startingBalance + interestCharge - MonthlyPayment;
                 if (endingBalance < 1 &&
                     endingBalance > 0) {
                     endingBalance = 0.00;
                 }
                 TableData.Add(new PaymentSummary {
                     Month = month,
-                    PaymentAmount = MonthlyPaymentRounded,
-                    PrinciplePaymentAmount = Math.Round(MonthlyPaymentRounded - interestCharge, 2),
+                    PaymentAmount = Math.Round(MonthlyPayment, 2),
+                    PrinciplePaymentAmount = Math.Round(MonthlyPayment - interestCharge, 2),
                     InterestPaymentAmount = Math.Round(interestCharge, 2),
                     TotalInterestPaid = Math.Round(totalInterestPaid, 2),
                     RemainingBalance = Math.Round(endingBalance, 2)
@@ -48,7 +48,7 @@
             };
         }
         public LoanParams Params { get; set; }
-        public double MonthlyPaymentRounded { get; set; }
+        public double MonthlyPayment { get; set; }
         public IList<PaymentSummary> TableData { get; set; }
         public LoanChart ChartData { get; set; }
     }

@@ -7,14 +7,6 @@
     <pre>
         <code class="language-cs">
             public class LoanController : Controller, ILoanController {
-                public LoanController() { loan = null; }
-                internal class ChartData {
-                    public ChartData() { }
-                    public string[] labels { get; set; }
-                    public double[] lineData { get; set; }
-                    public double[] barData { get; set; }
-                }
-                public LoanParams loan { get; set; }
                 public ViewResult App() {
                     return View();
                 }
@@ -22,30 +14,21 @@
                     return PartialView(isStart);
                 }
                 public PartialViewResult Table(double amount, int months, double rate) {
-                    loan = new LoanParams {
-                        InterestRate = rate,
-                        Principal = amount,
-                        TermLengthMonths = months
+                    LoanParams loan = new LoanParams {
+                        Amount = amount,
+                        Months = months,
+                        Rate = rate / 100
                     };
-                    return PartialView(new LoanTable(loan));
+                    return PartialView(loan.GetTableData());
                 }
                 public JsonResult Chart(double amount, int months, double rate) {
-                    loan = new LoanParams {
-                        InterestRate = rate,
-                        Principal = amount,
-                        TermLengthMonths = months
+                    LoanParams loan = new LoanParams {
+                        Amount = amount,
+                        Months = months,
+                        Rate = rate / 100
                     };
-                    LoanTable table = new LoanTable(loan);
-                    IList&lt;string> chartLabels = new List&lt;string>(loan.TermLengthMonths);
-                    DateTime time = DateTime.Now;
-                    for (int i = 0; i < loan.TermLengthMonths; i++) {
-                        chartLabels.Add(time.AddMonths(i).ToString("MMM"));
-                    }
-                    return Json(new ChartData {
-                        labels = chartLabels.ToArray(),
-                        lineData = table.TableData.Select(t => t.PrinciplePaymentAmount).ToArray(),
-                        barData = table.TableData.Select(t => t.InterestPaymentAmount).ToArray()
-                    }, JsonRequestBehavior.AllowGet);
+                    return Json(loan.GetChartData(),
+                    JsonRequestBehavior.AllowGet);
                 }
             }
         </code>
@@ -53,52 +36,66 @@
     <h2>Models:</h2>
     <h4>LoanTable</h4>
     <pre>
-    <code class="language-cs">
-            public class LoanTable {
-                public LoanTable(LoanParams loan) {
-                    Params = loan;
+        <code class="language-cs">
+            public class LoanData {
+                public LoanData(LoanParams loanParams) {
+                    Params = loanParams;
                     TableData = new List&lt;PaymentSummary>();
+                    MonthlyPayment =
+                        (Params.Amount * (Params.Rate / 12) * (Math.Pow(1 + Params.Rate / 12, Params.Months))) /
+                        (Math.Pow(1 + (Params.Rate / 12), Params.Months) - 1);
 
-                    double amount = Math.Round(loan.Principal, 2);
-                    double rate = loan.InterestRate / 100;
-                    double payment = Math.Round((amount * (rate / 12) * (Math.Pow(1 + rate / 12, loan.TermLengthMonths))) / (Math.Pow(1 + (rate / 12), loan.TermLengthMonths) - 1), 2);
-
-                    double startingBalance = amount;
-                    double endingBalance = amount;
+                    double startingBalance = Params.Amount;
+                    double endingBalance = Params.Amount;
                     double totalInterestPaid = 0.00;
 
-                    for (int month = 1; month <= loan.TermLengthMonths; month++) {
-                        double interestCharge = Math.Round(rate / 12 * startingBalance, 2);
+                    for (int month = 1; month <= Params.Months; month++) {
+                        double interestCharge = Params.Rate / 12 * startingBalance;
                         totalInterestPaid += interestCharge;
-                        endingBalance = Math.Round(startingBalance + interestCharge - payment, 2);
-                        if (endingBalance < 1 &&
-                            endingBalance > 0) {
-                            endingBalance = 0.00;
-                        }
+                        endingBalance = startingBalance + interestCharge - MonthlyPayment;
                         TableData.Add(new PaymentSummary {
                             Month = month,
-                            PaymentAmount = payment,
-                            PrinciplePaymentAmount = payment - interestCharge,
-                            InterestPaymentAmount = interestCharge,
-                            TotalInterestPaid = totalInterestPaid,
-                            RemainingBalance = endingBalance
+                            PaymentAmount = Math.Round(MonthlyPayment, 2),
+                            PrinciplePaymentAmount = Math.Round(MonthlyPayment - interestCharge, 2),
+                            InterestPaymentAmount = Math.Round(interestCharge, 2),
+                            TotalInterestPaid = Math.Round(totalInterestPaid, 2),
+                            RemainingBalance = Math.Round(endingBalance, 2)
                         });
                         startingBalance = endingBalance;
                     }
+
+                    IList&lt;string>chartLabels = new List&lt;string>();
+                    DateTime time = DateTime.Now;
+                    for (int i = 0; i < Params.Months; i++) {
+                        chartLabels.Add(time.AddMonths(i).ToString("MMM"));
+                    }
+                    ChartData = new LoanChart {
+                        labels = chartLabels.ToArray(),
+                        lineData = TableData.Select(t => t.PrinciplePaymentAmount).ToArray(),
+                        barData = TableData.Select(t => t.InterestPaymentAmount).ToArray()
+                    };
                 }
                 public LoanParams Params { get; set; }
+                public double MonthlyPayment { get; set; }
                 public IList&lt;PaymentSummary> TableData { get; set; }
+                public LoanChart ChartData { get; set; }
             }
         </code>
     </pre>
     <h4>LoanParams</h4>
     <pre>
-    <code class="language-cs">
+        <code class="language-cs">
             public class LoanParams {
                 public LoanParams() { }
-                public double Principal { get; set; }
-                public int TermLengthMonths { get; set; }
-                public double InterestRate { get; set; }
+                public double Amount { get; set; }
+                public int Months { get; set; }
+                public double Rate { get; set; }
+                public IList&lt;PaymentSummary> GetTableData() {
+                    return new LoanData(this).TableData;
+                }
+                public LoanChart GetChartData() {
+                    return new LoanData(this).ChartData;
+                }
             }
         </code>
     </pre>
@@ -139,7 +136,6 @@
                             &lt;canvas id="loanChart" style="max-height: 1000px;">&lt;/canvas>
                         &lt;/div>
                     &lt;/div>
-
                 &lt;/div>
             &lt;/div>
             &lt;!-- code preview -->
