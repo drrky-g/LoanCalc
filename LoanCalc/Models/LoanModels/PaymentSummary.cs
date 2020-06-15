@@ -7,6 +7,5 @@
         public double InterestPaymentAmount { get; set; }
         public double TotalInterestPaid { get; set; }
         public double RemainingBalance { get; set; }
-        
     }
 }

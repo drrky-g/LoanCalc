@@ -13,7 +13,7 @@
             LoanParams loan = new LoanParams {
                 Amount = amount,
                 Months = months,
-                Rate = rate
+                Rate = rate / 100
             };
             return PartialView(loan.GetTableData());
         }
@@ -21,7 +21,7 @@
             LoanParams loan = new LoanParams {
                 Amount = amount,
                 Months = months,
-                Rate = rate
+                Rate = rate / 100
             };
             return Json(loan.GetChartData(), 
                 JsonRequestBehavior.AllowGet);

@@ -7,10 +7,10 @@ namespace LoanCalc.Models.LoanModels {
         public int Months { get; set; }
         public double Rate { get; set; }
         public IList<PaymentSummary> GetTableData() {
-            return new LoanTable(Amount, Months, Rate).TableData;
+            return new LoanData(this).TableData;
         }
         public LoanChart GetChartData() {
-            return new LoanTable(Amount, Months, Rate).ChartData;
+            return new LoanData(this).ChartData;
         }
     }
 }

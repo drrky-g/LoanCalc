@@ -128,7 +128,7 @@
     <Compile Include="Interfaces\ILoanController.cs" />
     <Compile Include="Models\LoanModels\LoanChart.cs" />
     <Compile Include="Models\LoanModels\LoanParams.cs" />
-    <Compile Include="Models\LoanModels\LoanTable.cs" />
+    <Compile Include="Models\LoanModels\LoanData.cs" />
     <Compile Include="Models\LoanModels\PaymentSummary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
